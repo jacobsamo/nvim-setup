@@ -15,6 +15,13 @@ return {
       require "configs.lspconfig"
     end,
   },
+  {
+    "supermaven-inc/supermaven-nvim",
+    config = function ()
+      require("supermaven-nvim").setup({})
+    end,
+  },
+
   --
   -- {
   -- 	"williamboman/mason.nvim",
