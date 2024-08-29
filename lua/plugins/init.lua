@@ -14,9 +14,19 @@ return {
     end,
   },
   {
-    "supermaven-inc/supermaven-nvim",
+    "nvim-telescope/telescope.nvim",
     config = function ()
-      require("supermaven-nvim").setup({})
+      require('telescope').setup({})
+
+      local builtin = require('telescope.builtin')
+      vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
+      vim.keymap.set('n', '<C-p>', builtin.git_files, {})
+
+      -- fuzzy search
+      vim.keymap.set('n', '<leader>ps', function()
+        builtin.grep_string({ search = vim.fn.input("Grep > ") })
+      end)
+      
     end,
   },
   {
@@ -24,7 +34,7 @@ return {
     config = function ()
       require("supermaven-nvim").setup({})
     end,
-  },
+  }
   -- {
   -- 	"williamboman/mason.nvim",
   -- 	opts = {
@@ -43,5 +53,5 @@ return {
   --      "html", "css"
   -- 		},
   -- 	},
-  -- },
+  -- }
 }
