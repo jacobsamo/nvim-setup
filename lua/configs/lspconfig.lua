@@ -3,7 +3,20 @@ require("nvchad.configs.lspconfig").defaults()
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "tsserver", "tailwindcss", "lua_ls", "biome"}
+local servers = { 
+  "tsserver",       -- TypeScript & JavaScript
+  "omnisharp",      -- C#
+  "dartls",         -- Dart & Flutter
+  "html",           -- HTML
+  "cssls",          -- CSS
+  "tailwindcss",    -- Tailwind CSS (if needed)
+  "lua_ls",         -- Lua
+  "angularls",      -- Angular
+  "astro",          -- Astro
+  "ltex",           -- Spell Checker
+  "pyright"         -- Python
+}
+
 local nvlsp = require "nvchad.configs.lspconfig"
 
 -- lsps with default config
