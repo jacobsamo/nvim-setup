@@ -115,7 +115,7 @@ vim.keymap.set("t", "<C-x>", "<C-\\><C-N>", { desc = "terminal escape terminal m
 
 -- new terminals
 vim.keymap.set("n", "<leader>h", function()
-  require(".term").new { pos = "sp" }
+  require("nvchad.term").new { pos = "sp" }
 end, { desc = "terminal new horizontal term" })
 
 vim.keymap.set("n", "<leader>v", function()
