@@ -1,4 +1,8 @@
 return {
+  spec = {
+    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
+    { import = "lazyvim.plugins.extras.lang.angular" },
+  },
   defaults = { lazy = true },
   install = { colorscheme = { "nvchad" } },
 
@@ -10,6 +14,7 @@ return {
       not_loaded = "",
     },
   },
+
 
   performance = {
     rtp = {

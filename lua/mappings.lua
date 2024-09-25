@@ -13,8 +13,8 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv") -- same as option + down arrow
 
 
 -- scroll up/down the page
-vim.keymap.set("n", "3<C-Up>", '3<C-E>')
-vim.keymap.set("n", "3<C-Up>", '3<C-Y>')
+-- vim.keymap.set("n", "3<C-Up>", '3<C-E>')
+-- vim.keymap.set("n", "3<C-Up>", '3<C-Y>')
 
 
 vim.keymap.set("n", "J", "mzJ`z")

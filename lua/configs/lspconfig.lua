@@ -11,9 +11,9 @@ local servers = {
   "cssls",          -- CSS
   "tailwindcss",    -- Tailwind CSS (if needed)
   "lua_ls",         -- Lua
-  "angularls",      -- Angular
+  -- "angularls",      -- Angular
   "astro",          -- Astro
-  "ltex",           -- Spell Checker
+  -- "ltex",           -- Spell Checker
   "pyright"         -- Python
 }
 
