@@ -1,17 +1,32 @@
 return {
   require 'plugins.debug',
-  require 'plugins.indent_line',
   require 'plugins.lint',
   require 'plugins.autopairs',
   require 'plugins.neo-tree',
-  require 'plugins.gitsigns',  -- adds gitsigns recommend keymaps
+  require 'plugins.git',
   require 'plugins.lspconfig', -- lsp setup
 
   'tpope/vim-sleuth',          -- Detect tabstop and shiftwidth automatically
-
-  {                            -- Useful plugin to show you pending keybinds.
+  {
+    'goolord/alpha-nvim',
+    config = function()
+      require('alpha').setup(require('alpha.themes.dashboard').config)
+    end,
+  },
+  {
+    'supermaven-inc/supermaven-nvim',
+    opts = {},
+  },
+  { -- Add indentation guides even on blank lines
+    'lukas-reineke/indent-blankline.nvim',
+    -- Enable `lukas-reineke/indent-blankline.nvim`
+    -- See `:help ibl`
+    main = 'ibl',
+    opts = {},
+  },
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
-    event = 'VimEnter',        -- Sets the loading event to 'VimEnter'
+    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
       icons = {
         -- set icon mappings to true if you have a Nerd Font
@@ -344,6 +359,7 @@ return {
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'supermaven' },
         },
       }
     end,

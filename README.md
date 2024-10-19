@@ -43,4 +43,11 @@ npm install -g @angular/language-server
 dotnet tool install --global csharp-ls
 ```
 
+**LazyGit**
+following the install guide from https://github.com/jesseduffield/lazygit?tab=readme-ov-file#installation
+
+- windows: `choco install lazygit`
+- mac: `brew install lazygit`
+- linux: `sudo apt install lazygit`
+
 4. Run `nvim` to start Neovim
