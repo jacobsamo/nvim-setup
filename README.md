@@ -1,9 +1,53 @@
-**This repo is supposed to used as config by NvChad users!**
+# My Neovim Configuration
 
-- The main nvchad repo (NvChad/NvChad) is used as a plugin by this repo.
-- So you just import its modules , like `require "nvchad.options" , require "nvchad.mappings"`
-- So you can delete the .git from this repo ( when you clone it locally ) or fork it :)
+This is my personal Neovim configuration, started from the [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) template.
 
-# Credits
+## To get started
 
-1) Lazyvim starter https://github.com/LazyVim/starter as nvchad's starter was inspired by Lazyvim's . It made a lot of things easier!
+1. Make sure you have the following installed:
+
+   - [Neovim](https://github.com/neovim/neovim/releases)
+   - [Git](https://git-scm.com/downloads)
+   - [NodeJS](https://nodejs.org/en/download/)
+
+2. Clone this repository
+
+```bash
+git clone https://github.com/jacobsamo/nvim-setup
+```
+
+### 3. Setting up the language servers
+
+Install the following language servers globally: - [vscode-langservers-extracted](https://github.com/vscode-langservers/vscode-langservers-extracted) for css, html, json and eslint language servers - [typescipt](https://github.com/typescript-language-server/typescript-language-server) - [tailwindcss](https://github.com/tailwindlabs/tailwindcss-intellisense) - [angular]() for those using angular (optional)
+
+required:
+
+```bash
+npm install -g vscode-langservers-extracted
+npm install -g typescript-language-server
+npm install -g @tailwindcss/language-server
+```
+
+optional (if your not using any of this make sure to uncomment them in the `lspconfig.lua` file):
+
+```bash
+npm install -g @angular/language-server
+```
+
+**C# setup**
+
+- make sure you have the [dotnet-sdk](https://dotnet.microsoft.com/en-us/download) installed
+- make sure you install the csharp-ls tool globally
+
+```bash
+dotnet tool install --global csharp-ls
+```
+
+**LazyGit**
+following the install guide from https://github.com/jesseduffield/lazygit?tab=readme-ov-file#installation
+
+- windows: `choco install lazygit`
+- mac: `brew install lazygit`
+- linux: `sudo apt install lazygit`
+
+4. Run `nvim` to start Neovim
