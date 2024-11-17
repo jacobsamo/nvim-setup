@@ -159,6 +159,7 @@ require('lazy').setup({
 
 vim.schedule(function()
   require "config.mappings"
+  require "config.autocmds"
 end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`

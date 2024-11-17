@@ -6,6 +6,7 @@ return {
   require 'plugins.git',
   require 'plugins.lspconfig', -- lsp setup
   require 'plugins.tele',
+  require 'plugins.bufferline',
 
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'tpope/vim-surround',
