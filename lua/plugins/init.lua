@@ -4,19 +4,22 @@ return {
   require 'plugins.autopairs',
   require 'plugins.neo-tree',
   require 'plugins.git',
-  require 'plugins.lspconfig', -- lsp setup
+  require 'plugins.lspconfig',
   require 'plugins.tele',
   require 'plugins.bufferline',
   require 'plugins.mini',
+  require 'plugins.undotree',
 
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-surround',
+  -- 'tpope/vim-surround', -- surround objects
+  -- Start up screen
   {
     'goolord/alpha-nvim',
     config = function()
       require('alpha').setup(require('alpha.themes.dashboard').config)
     end,
   },
+  -- Ai autocomplation
   {
     'supermaven-inc/supermaven-nvim',
     opts = {},
@@ -284,14 +287,33 @@ return {
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/trouble.nvim',
+    config = function()
+      require('trouble').setup {
+        icons = false,
+      }
 
+      vim.keymap.set('n', '<leader>tt', function()
+        require('trouble').toggle()
+      end)
+
+      vim.keymap.set('n', '[t', function()
+        require('trouble').next { skip_groups = true, jump = true }
+      end)
+
+      vim.keymap.set('n', ']t', function()
+        require('trouble').previous { skip_groups = true, jump = true }
+      end)
+    end,
+  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'javascript', 'typescript' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -299,9 +321,9 @@ return {
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        -- additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:

@@ -199,7 +199,9 @@ return {
     require('mason').setup()
 
     -- Flutter developement
-    require('lspconfig').dartls.setup {}
+    require'lspconfig'.dartls.setup{ 
+      cmd = { "dart", 'language-server', '--protocol=lsp' }, 
+    }
 
     -- You can add other tools here that you want Mason to install
     -- for you, so that they are available from within Neovim.
