@@ -21,7 +21,8 @@ map('v', '<A-k>', ":m '<-2<cr>gv=gv", { desc = 'Move Up' })
 map('n', '<leader>k', vim.lsp.buf.hover, { noremap = true, silent = true, desc = 'Hover' })
 
 -- telescope
-pcall(require('telescope').load_extension, 'fzf')
+-- FIX: The extension for telescope-fzf-native is 'fzf_native', not 'fzf'
+pcall(require('telescope').load_extension, 'fzf_native')
 pcall(require('telescope').load_extension, 'ui-select')
 
 -- See `:help telescope.builtin`

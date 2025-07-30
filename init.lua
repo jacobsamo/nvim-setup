@@ -158,9 +158,17 @@ require('lazy').setup({
 })
 
 vim.schedule(function()
+   require('config.logging').setup()
   require "config.mappings"
   require "config.autocmds"
 end)
+
+vim.lsp.set_log_level("INFO")
+
+vim.defer_fn(function()
+  local logger = require('config.logging')
+  logger.info('init.lua loaded successfully', 'INIT', 'startup')
+end, 100)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
