@@ -5,18 +5,24 @@
 -- * disable/enabled LazyVim plugins
 -- * override the configuration of LazyVim plugins
 return {
-  -- formatters
-  { import = "lazyvim.plugins.extras.formatting.prettier" },
-  { import = "lazyvim.plugins.extras.editor.harpoon2" },
-  { import = "lazyvim.plugins.extras.editor.neo-tree" },
+  -- Neo-tree configuration
   {
     "nvim-neo-tree/neo-tree.nvim",
     keys = {
       { "\\", "<cmd>Neotree focus<CR>", desc = "Focus NeoTree", silent = true },
       { "\\\\", "<cmd>Neotree close<CR>", desc = "Close NeoTree", silent = true },
     },
+    opts = {
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = false,
+        },
+      },
+    },
   },
 
+  -- Snacks.nvim configuration (file picker)
   {
     "folke/snacks.nvim",
     keys = {
@@ -37,26 +43,48 @@ return {
     },
   },
 
-  -- add more treesitter parsers
+  -- Treesitter configuration
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
       ensure_installed = {
         "bash",
         "html",
+        "css",
+        "scss",
         "javascript",
+        "typescript",
+        "tsx",
         "json",
+        "jsonc",
         "lua",
         "markdown",
         "markdown_inline",
         "python",
         "query",
         "regex",
-        "tsx",
-        "typescript",
         "vim",
         "yaml",
+        "dart", -- Add Dart support
+        "c_sharp", -- Add C# support
+      },
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
+      indent = {
+        enable = true,
+      },
+      autotag = {
+        enable = true,
       },
     },
+  },
+
+  -- Auto-tag for HTML/JSX
+  {
+    "windwp/nvim-ts-autotag",
+    event = "LazyFile",
+    opts = {},
   },
 }
