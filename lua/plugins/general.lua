@@ -7,32 +7,33 @@
 return {
   -- formatters
   { import = "lazyvim.plugins.extras.formatting.prettier" },
+  { import = "lazyvim.plugins.extras.editor.harpoon2" },
+  { import = "lazyvim.plugins.extras.editor.neo-tree" },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    keys = {
+      { "\\", "<cmd>Neotree focus<CR>", desc = "Focus NeoTree", silent = true },
+      { "\\\\", "<cmd>Neotree close<CR>", desc = "Close NeoTree", silent = true },
+    },
+  },
 
   {
     "folke/snacks.nvim",
     keys = {
-      { "<leader>sf", function() Snacks.picker.smart() end,    desc = "[S]earch [F]ile" },
-      { "<leader>sg", function() Snacks.picker.grep() end,     desc = "[S]earch [G]rep" },
-      { "\\",         function() Snacks.explorer.reveal() end, desc = "File Explorer" },
-      { "\\\\",         function() Snacks.explorer() end, desc = "Toggle Explorer" },
-    
-    },
-    opts = {
-      explorer = {
-        replace_netrw = true,
+      {
+        "<leader>sf",
+        function()
+          Snacks.picker.smart()
+        end,
+        desc = "[S]earch [F]ile",
       },
-      picker = {
-        explorer = {
-
-          win = {
-            list = {
-              keys = {
-                ["\\"] = "explorer_close",
-              },
-            },
-          },
-        }
-      }
+      {
+        "<leader>sg",
+        function()
+          Snacks.picker.grep()
+        end,
+        desc = "[S]earch [G]rep",
+      },
     },
   },
 
