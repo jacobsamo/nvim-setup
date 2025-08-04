@@ -1,6 +1,17 @@
-# My Neovim Configuration
+# My 💤 LazyVim Neovim Configuration
 
-This is my personal Neovim configuration, started from the [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) template.
+This is my personal Neovim configuration, using the starter template for [LazyVim](https://github.com/LazyVim/LazyVim), Refer to the [documentation](https://lazyvim.github.io/installation) to get started and configure to your liking.
+
+I have configured the setup to work with the following lanauges:
+
+- JavaScript/TypeScript
+- HTML/CSS
+- Python
+- C#
+- Lua
+- Dart / Flutter
+
+To get them working please follow the instructions below.
 
 ## To get started
 
@@ -9,6 +20,7 @@ This is my personal Neovim configuration, started from the [kickstart.nvim](http
    - [Neovim](https://github.com/neovim/neovim/releases)
    - [Git](https://git-scm.com/downloads)
    - [NodeJS](https://nodejs.org/en/download/)
+   - [C#](https://dotnet.microsoft.com/en-us/download) (optional, only if you want to use C#)
 
 2. Clone this repository
 
@@ -18,7 +30,12 @@ git clone https://github.com/jacobsamo/nvim-setup
 
 ### 3. Setting up the language servers
 
-Install the following language servers globally: - [vscode-langservers-extracted](https://github.com/vscode-langservers/vscode-langservers-extracted) for css, html, json and eslint language servers - [typescipt](https://github.com/typescript-language-server/typescript-language-server) - [tailwindcss](https://github.com/tailwindlabs/tailwindcss-intellisense) - [angular]() for those using angular (optional)
+The following language servers will need to be installed globally:
+
+- [vscode-langservers-extracted](https://github.com/vscode-langservers/vscode-langservers-extracted) for css, html, json and eslint language servers
+- [typescipt](https://github.com/typescript-language-server/typescript-language-server)
+- [tailwindcss](https://github.com/tailwindlabs/tailwindcss-intellisense)
+- [angular]() for those using angular (optional)
 
 required:
 
