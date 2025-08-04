@@ -1,131 +1,143 @@
--- Here we setup nvim-treesitter and nvim-treesitter-textobjects using lazy.nvim.
--- nvim-treesitter provides syntax highlighting and code parsing capabilities.
-
--- nvim-treesitter
--- https://github.com/nvim-treesitter/nvim-treesitter
-
--- nvim-treesitter-textobjects
--- Syntax aware text-objects, select, move, swap, and peek support.
--- https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-
-
+-- Treesitter configuration for syntax highlighting and code parsing
 return {
-    -- nvim-treesitter
-    -- https://github.com/nvim-treesitter/nvim-treesitter
     {
         "nvim-treesitter/nvim-treesitter",
-        version = false, -- last release is way too old and doesn't work on Windows
         build = ":TSUpdate",
-        event = { "InsertEnter", "VeryLazy" },
-        lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
-        init = function(plugin)
-            -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
-            -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
-            -- no longer trigger the **nvim-treesitter** module to be loaded in time.
-            -- Luckily, the only things that those plugins need are the custom queries, which we make available
-            -- during startup.
-            require("lazy.core.loader").add_to_rtp(plugin)
-            require("nvim-treesitter.query_predicates")
-        end,
-        cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
-        keys = {
-            { "<c-space>", desc = "Increment Selection" },
-            { "<bs>",      desc = "Decrement Selection", mode = "x" },
+        event = { "BufReadPost", "BufNewFile" },
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter-textobjects",
         },
-        opts_extend = { "ensure_installed" },
-        ---@type TSConfig
-        ---@diagnostic disable-next-line: missing-fields
-        opts = {
-            highlight = { enable = true },
-            indent = { enable = true },
-            ensure_installed = {
-                "bash",
-                "c",
-                "diff",
-                "html",
-                "javascript",
-                "jsdoc",
-                "json",
-                "jsonc",
-                "lua",
-                "luadoc",
-                "luap",
-                "markdown",
-                "markdown_inline",
-                "printf",
-                "python",
-                "query",
-                "regex",
-                "toml",
-                "tsx",
-                "typescript",
-                "vim",
-                "vimdoc",
-                "xml",
-                "yaml",
-                "dart"
-            },
-            incremental_selection = {
-                enable = true,
-                keymaps = {
-                    init_selection = "<C-space>",
-                    node_incremental = "<C-space>",
-                    scope_incremental = false,
-                    node_decremental = "<bs>",
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                ensure_installed = {
+                    "bash",
+                    "c",
+                    "css",
+                    "dart",
+                    "html",
+                    "javascript",
+                    "jsdoc",
+                    "json",
+                    "jsonc",
+                    "lua",
+                    "luadoc",
+                    "markdown",
+                    "markdown_inline",
+                    "python",
+                    "query",
+                    "regex",
+                    "tsx",
+                    "typescript",
+                    "vim",
+                    "vimdoc",
+                    "yaml",
+                    "c_sharp",
                 },
-            },
-            textobjects = {
-                move = {
+
+                auto_install = true,
+
+                highlight = {
                     enable = true,
-                    goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer", ["]a"] = "@parameter.inner" },
-                    goto_next_end = { ["]F"] = "@function.outer", ["]C"] = "@class.outer", ["]A"] = "@parameter.inner" },
-                    goto_previous_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer", ["[a"] = "@parameter.inner" },
-                    goto_previous_end = { ["[F"] = "@function.outer", ["[C"] = "@class.outer", ["[A"] = "@parameter.inner" },
+                    additional_vim_regex_highlighting = false,
                 },
-            },
-        },
-        ---@param opts TSConfig
-        config = function(_, opts)
-            if type(opts.ensure_installed) == "table" then
-                opts.ensure_installed = LazyVim.dedup(opts.ensure_installed)
-            end
-            require("nvim-treesitter.configs").setup(opts)
+
+                indent = {
+                    enable = true,
+                },
+
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = "<C-space>",
+                        node_incremental = "<C-space>",
+                        scope_incremental = false,
+                        node_decremental = "<bs>",
+                    },
+                },
+
+                textobjects = {
+                    select = {
+                        enable = true,
+                        lookahead = true,
+                        keymaps = {
+                            ["af"] = "@function.outer",
+                            ["if"] = "@function.inner",
+                            ["ac"] = "@class.outer",
+                            ["ic"] = "@class.inner",
+                            ["aa"] = "@parameter.outer",
+                            ["ia"] = "@parameter.inner",
+                        },
+                    },
+                    move = {
+                        enable = true,
+                        set_jumps = true,
+                        goto_next_start = {
+                            ["]f"] = "@function.outer",
+                            ["]c"] = "@class.outer",
+                            ["]a"] = "@parameter.inner",
+                        },
+                        goto_next_end = {
+                            ["]F"] = "@function.outer",
+                            ["]C"] = "@class.outer",
+                            ["]A"] = "@parameter.inner",
+                        },
+                        goto_previous_start = {
+                            ["[f"] = "@function.outer",
+                            ["[c"] = "@class.outer",
+                            ["[a"] = "@parameter.inner",
+                        },
+                        goto_previous_end = {
+                            ["[F"] = "@function.outer",
+                            ["[C"] = "@class.outer",
+                            ["[A"] = "@parameter.inner",
+                        },
+                    },
+                    swap = {
+                        enable = true,
+                        swap_next = {
+                            ["<leader>a"] = "@parameter.inner",
+                        },
+                        swap_previous = {
+                            ["<leader>A"] = "@parameter.inner",
+                        },
+                    },
+                },
+            })
+
+            -- Folding based on treesitter
+            vim.opt.foldmethod = "expr"
+            vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+            vim.opt.foldenable = false -- Start with folds open
         end,
     },
 
-    -- Syntax aware text-objects, select, move, swap, and peek support.
-    -- https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    -- Auto tag closing for HTML/JSX
     {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        event = "VeryLazy",
-        enabled = true,
+        "windwp/nvim-ts-autotag",
+        ft = {
+            "html",
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "typescriptreact",
+            "vue",
+            "svelte",
+        },
         config = function()
-            -- If treesitter is already loaded, we need to run config again for textobjects
-            if LazyVim.is_loaded("nvim-treesitter") then
-                local opts = LazyVim.opts("nvim-treesitter")
-                require("nvim-treesitter.configs").setup({ textobjects = opts.textobjects })
-            end
-
-            -- When in diff mode, we want to use the default
-            -- vim text objects c & C instead of the treesitter ones.
-            local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
-            local configs = require("nvim-treesitter.configs")
-            for name, fn in pairs(move) do
-                if name:find("goto") == 1 then
-                    move[name] = function(q, ...)
-                        if vim.wo.diff then
-                            local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
-                            for key, query in pairs(config or {}) do
-                                if q == query and key:find("[%]%[][cC]") then
-                                    vim.cmd("normal! " .. key)
-                                    return
-                                end
-                            end
-                        end
-                        return fn(q, ...)
-                    end
-                end
-            end
+            require("nvim-ts-autotag").setup({
+                opts = {
+                    enable_close = true,
+                    enable_rename = true,
+                    enable_close_on_slash = false,
+                },
+            })
         end,
-    }
+    },
+
+    -- Better commenting with treesitter context
+    {
+        "folke/ts-comments.nvim",
+        event = "VeryLazy",
+        opts = {},
+    },
 }
