@@ -104,33 +104,6 @@ return {
     end,
   },
 
-  -- Mason tool installer for formatters and linters
-  {
-    "WhoIsSethDaniel/mason-tool-installer.nvim",
-    dependencies = { "williamboman/mason.nvim" },
-    config = function()
-      require("mason-tool-installer").setup({
-        ensure_installed = {
-          -- Formatters
-          "prettier",
-          "biome",
-          "black",      -- Python formatter
-          "isort",      -- Python import sorter
-          "stylua",     -- Lua formatter
-          "csharpier",  -- C# formatter
-          
-          -- Linters
-          "eslint_d",   -- ESLint daemon
-          "pylint",     -- Python linter
-          "flake8",     -- Python linter
-          "luacheck",   -- Lua linter
-        },
-        auto_update = false,
-        run_on_start = true,
-      })
-    end,
-  },
-
   -- nvim-lint for linting
   {
     "mfussenegger/nvim-lint",

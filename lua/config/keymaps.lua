@@ -46,7 +46,13 @@ map("n", "<leader>bo", function()
 end, { desc = "Delete Other Buffers" })
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
 
-
+-- trouble
+map("n", "<leader>xx", function() require("trouble").toggle() end, { desc = "Toggle Trouble" })
+map("n", "<leader>xw", function() require("trouble").toggle("workspace_diagnostics") end,
+  { desc = "Workspace Diagnostics" })
+map("n", "<leader>xd", function() require("trouble").toggle("document_diagnostics") end,
+  { desc = "Document Diagnostics" })
+map("n", "<leader>xr", function() require("trouble").toggle("lsp_references") end, { desc = "LSP References" })
 
 -- Clear search, diff update and redraw
 -- taken from runtime/lua/_editor.lua
@@ -87,8 +93,12 @@ map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Commen
 -- lazy
 map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
--- new file
-map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
+-- files
+map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" }
+)
+map("n", "<leader>f", function()
+  require("conform").format({ bufnr = 0 })
+end)
 
 -- location list
 map("n", "<leader>xl", function()
@@ -134,10 +144,12 @@ Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
 Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
 Snacks.toggle.diagnostics():map("<leader>ud")
 Snacks.toggle.line_number():map("<leader>ul")
-Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2, name = "Conceal Level" }):map("<leader>uc")
-Snacks.toggle.option("showtabline", { off = 0, on = vim.o.showtabline > 0 and vim.o.showtabline or 2, name = "Tabline" }):map("<leader>uA")
+Snacks.toggle.option("conceallevel",
+  { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2, name = "Conceal Level" }):map("<leader>uc")
+Snacks.toggle.option("showtabline", { off = 0, on = vim.o.showtabline > 0 and vim.o.showtabline or 2, name = "Tabline" })
+    :map("<leader>uA")
 Snacks.toggle.treesitter():map("<leader>uT")
-Snacks.toggle.option("background", { off = "light", on = "dark" , name = "Dark Background" }):map("<leader>ub")
+Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>ub")
 Snacks.toggle.dim():map("<leader>uD")
 Snacks.toggle.animate():map("<leader>ua")
 Snacks.toggle.indent():map("<leader>ug")
@@ -160,7 +172,7 @@ end
 
 map("n", "<leader>gb", function() Snacks.picker.git_log_line() end, { desc = "Git Blame Line" })
 map({ "n", "x" }, "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse (open)" })
-map({"n", "x" }, "<leader>gY", function()
+map({ "n", "x" }, "<leader>gY", function()
   Snacks.gitbrowse({ open = function(url) vim.fn.setreg("+", url) end, notify = false })
 end, { desc = "Git Browse (copy)" })
 
@@ -169,7 +181,10 @@ map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 
 -- highlights under cursor
 map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
-map("n", "<leader>uI", function() vim.treesitter.inspect_tree() vim.api.nvim_input("I") end, { desc = "Inspect Tree" })
+map("n", "<leader>uI", function()
+  vim.treesitter.inspect_tree()
+  vim.api.nvim_input("I")
+end, { desc = "Inspect Tree" })
 
 
 -- Terminal Mappings
