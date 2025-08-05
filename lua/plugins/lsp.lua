@@ -10,15 +10,15 @@
 
 ---@type table<string, LspConfig>
 local servers = {
-    ts_ls = {},
-    angularls = {},
-    tailwindcss = {},
-    pyright = {},
-    html = {},
-    cssls = {},
-    jsonls = {},
-    eslint = {},
-    prettierd = {},
+    ts_ls = { enable = true },
+    angularls = { enable = true },
+    tailwindcss = { enable = true },
+    pyright = { enable = true },
+    html = { enable = true },
+    cssls = { enable = true },
+    jsonls = { enable = true },
+    eslint = { enable = true },
+    prettierd = { enable = true },
 
     csharpier = {
         enable = false,
@@ -33,6 +33,7 @@ local servers = {
     },
 
     lua_ls = {
+        enable = true,
         settings = {
             Lua = {
                 completion = { callSnippet = 'Replace' },
@@ -55,7 +56,7 @@ local servers = {
     },
 }
 
--- Helper: split servers by mason support
+-- Helper: split servers by mason support and filter enabled ones
 local function split_servers(tbl)
     local mason = {}
     local manual = {}
@@ -70,6 +71,24 @@ local function split_servers(tbl)
     end
     return mason, manual
 end
+
+-- Helper: get only enabled servers for mason-lspconfig
+local function get_enabled_servers(tbl)
+    local enabled = {}
+    for name, config in pairs(tbl) do
+        if config.enable ~= false then
+            -- shallow copy to avoid mutating original config
+            local conf = vim.tbl_deep_extend("force", {}, config)
+
+            -- remove the enable key
+            conf.enable = nil
+
+            enabled[name] = conf
+        end
+    end
+    return enabled
+end
+
 
 -- Default on_attach behavior
 local function default_on_attach(client, bufnr)
@@ -117,7 +136,9 @@ local typescript_plugins = {
                 end
             end,
             settings = {
-                tsserver_plugins = {},
+                tsserver_plugins = {
+
+                },
             },
         },
     },
@@ -156,15 +177,39 @@ return {
     -- },
     -- Core LSP Setup
     {
+        "hrsh7th/nvim-cmp",
+        event = "InsertEnter",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+            "L3MON4D3/LuaSnip",
+        },
+        config = function()
+            -- Your cmp setup here
+        end,
+    },
+    {
+        "mason-org/mason.nvim",
+        opts = {}
+    },
+
+    { "mason-org/mason-lspconfig.nvim" },
+    { "WhoIsSethDaniel/mason-tool-installer.nvim" },
+    {
+        "j-hui/fidget.nvim",
+        opts = {},
+    },
+    {
         "neovim/nvim-lspconfig",
         dependencies = {
-            { "mason-org/mason.nvim", opts = {} },
+            "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
             "WhoIsSethDaniel/mason-tool-installer.nvim",
-
+            "j-hui/fidget.nvim",
             -- LSP UI/Health
-            { "j-hui/fidget.nvim",    opts = {} },
-            { "folke/trouble.nvim",   opts = {} },
+            { "folke/trouble.nvim", opts = {} },
 
             -- Completion Capabilities
             "hrsh7th/cmp-nvim-lsp",
@@ -172,17 +217,21 @@ return {
         },
         config = function()
             local capabilities = require("blink.cmp").get_lsp_capabilities()
-            local mason_lsps, manual_lsps = split_servers(servers)
 
+            -- Only work with enabled servers
+            local enabled_servers = get_enabled_servers(servers)
+            local mason_lsps, manual_lsps = split_servers(enabled_servers)
 
+            -- Install Mason-based servers
+            require("mason-tool-installer").setup {
+                ensure_installed = mason_lsps,
+            }
 
             -- Mason LSP setups via mason-lspconfig
             require("mason-lspconfig").setup {
-                ensure_installed = {},
-                automatic_installation = false,
                 handlers = {
                     function(server_name)
-                        local config = servers[server_name] or {}
+                        local config = enabled_servers[server_name] or {}
                         config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
                         config.on_attach = config.on_attach or default_on_attach
                         require("lspconfig")[server_name].setup(config)
@@ -190,20 +239,13 @@ return {
                 },
             }
 
-
-            -- Install Mason-based servers
-            require("mason-tool-installer").setup {
-                ensure_installed = mason_lsps,
-            }
-
             -- Manual LSP setups (non-Mason)
             for _, name in ipairs(manual_lsps) do
-                local config = servers[name] or {}
+                local config = enabled_servers[name] or {}
                 config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
                 config.on_attach = config.on_attach or default_on_attach
                 require("lspconfig")[name].setup(config)
             end
-
 
             -- Diagnostics config
             vim.diagnostic.config {

@@ -96,9 +96,6 @@ map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- files
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" }
 )
-map("n", "<leader>f", function()
-  require("conform").format({ bufnr = 0 })
-end)
 
 -- location list
 map("n", "<leader>xl", function()

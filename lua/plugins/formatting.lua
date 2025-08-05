@@ -81,7 +81,7 @@ return {
       })
 
       -- Manual format keymap
-      vim.keymap.set({ "n", "v" }, "<leader>fm", function()
+      vim.keymap.set({ "n", "v" }, "<leader>f", function()
         require("conform").format({
           lsp_fallback = true,
           async = false,
@@ -137,6 +137,7 @@ return {
                 ".eslintrc.yaml",
                 ".eslintrc.yml",
                 "eslint.config.js",
+                "eslint.config.mjs",
                 "package.json" -- Check if eslint config is in package.json
               }, { upward = true, type = "file" })[1]
               

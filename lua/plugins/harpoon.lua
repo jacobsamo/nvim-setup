@@ -19,12 +19,11 @@ return {
             })
 
             -- Keymaps
-            vim.keymap.set("n", "<leader>h", function()
-                harpoon.ui:toggle_quick_menu(harpoon:list())
-            end, { desc = "Open harpoon window" })
+            vim.keymap.set("n", "<leader>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end,
+            { desc = "Open harpoon window" })
 
             vim.keymap.set("n", "<leader>H", function()
-                harpoon:list():append()
+                harpoon:list():add()
             end, { desc = "Add current file to harpoon" })
 
             -- Quick navigation to harpoon files
