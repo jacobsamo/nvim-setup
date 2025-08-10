@@ -301,7 +301,7 @@ local first_class_langs = {
         plugins = {
             {
                 "joeveiga/ng.nvim",
-                ft = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+                ft = { "typescript", "html"},
                 config = function()
                     require("ng").setup({})
                 end,
@@ -431,92 +431,92 @@ local first_class_langs = {
                 },
             },
         },
-        plugins = {
-            {
-                "akinsho/flutter-tools.nvim",
-                ft = { "dart" },
-                dependencies = {
-                    "nvim-lua/plenary.nvim",
-                    "stevearc/dressing.nvim",
-                },
-                config = function()
-                    require("flutter-tools").setup({
-                        ui = {
-                            border = "rounded",
-                            notification_style = "native",
-                        },
-                        decorations = {
-                            statusline = {
-                                app_version = false,
-                                device = true,
-                            },
-                        },
-                        debugger = {
-                            enabled = false,
-                        },
-                        flutter_path = nil,       -- Auto-detect
-                        flutter_lookup_cmd = nil, -- Auto-detect
-                        fvm = false,              -- Set to true if using FVM
-                        widget_guides = {
-                            enabled = false,
-                        },
-                        closing_tags = {
-                            highlight = "Comment",
-                            prefix = "// ",
-                            enabled = true,
-                        },
-                        dev_log = {
-                            enabled = true,
-                            notify_errors = false,
-                            open_cmd = "tabedit",
-                        },
-                        dev_tools = {
-                            autostart = false,
-                            auto_open_browser = false,
-                        },
-                        outline = {
-                            open_cmd = "30vnew",
-                            auto_open = false,
-                        },
-                        lsp = {
-                            color = {
-                                enabled = false,
-                                background = false,
-                                background_color = nil,
-                                foreground = false,
-                                virtual_text = true,
-                                virtual_text_str = "■",
-                            },
-                            on_attach = function(client, bufnr)
-                                local function map(mode, lhs, rhs, desc)
-                                    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
-                                end
+        -- plugins = {
+        --     {
+        --         "akinsho/flutter-tools.nvim",
+        --         ft = { "dart" },
+        --         dependencies = {
+        --             "nvim-lua/plenary.nvim",
+        --             "stevearc/dressing.nvim",
+        --         },
+        --         config = function()
+        --             require("flutter-tools").setup({
+        --                 ui = {
+        --                     border = "rounded",
+        --                     notification_style = "native",
+        --                 },
+        --                 decorations = {
+        --                     statusline = {
+        --                         app_version = false,
+        --                         device = true,
+        --                     },
+        --                 },
+        --                 debugger = {
+        --                     enabled = false,
+        --                 },
+        --                 flutter_path = nil,       -- Auto-detect
+        --                 flutter_lookup_cmd = nil, -- Auto-detect
+        --                 fvm = false,              -- Set to true if using FVM
+        --                 widget_guides = {
+        --                     enabled = false,
+        --                 },
+        --                 closing_tags = {
+        --                     highlight = "Comment",
+        --                     prefix = "// ",
+        --                     enabled = true,
+        --                 },
+        --                 dev_log = {
+        --                     enabled = true,
+        --                     notify_errors = false,
+        --                     open_cmd = "tabedit",
+        --                 },
+        --                 dev_tools = {
+        --                     autostart = false,
+        --                     auto_open_browser = false,
+        --                 },
+        --                 outline = {
+        --                     open_cmd = "30vnew",
+        --                     auto_open = false,
+        --                 },
+        --                 lsp = {
+        --                     color = {
+        --                         enabled = false,
+        --                         background = false,
+        --                         background_color = nil,
+        --                         foreground = false,
+        --                         virtual_text = true,
+        --                         virtual_text_str = "■",
+        --                     },
+        --                     on_attach = function(client, bufnr)
+        --                         local function map(mode, lhs, rhs, desc)
+        --                             vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true })
+        --                         end
 
-                                -- Flutter-specific commands
-                                map("n", "<leader>fR", "<cmd>FlutterReload<cr>", "[F]lutter [R]eload")
-                                map("n", "<leader>fT", "<cmd>FlutterRestart<cr>", "[F]lutter Res[T]art")
-                                map("n", "<leader>fq", "<cmd>FlutterQuit<cr>", "[F]lutter [Q]uit")
-                                map("n", "<leader>fd", "<cmd>FlutterDevices<cr>", "[F]lutter [D]evices")
-                                map("n", "<leader>fe", "<cmd>FlutterEmulators<cr>", "[F]lutter [E]mulators")
-                                map("n", "<leader>fo", "<cmd>FlutterOutlineToggle<cr>", "[F]lutter [O]utline")
-                                map("n", "<leader>ft", "<cmd>FlutterDevTools<cr>", "[F]lutter Dev[T]ools")
-                                map("n", "<leader>fc", "<cmd>FlutterCopyProfilerUrl<cr>", "[F]lutter [C]opy Profiler URL")
-                                map("n", "<leader>fl", "<cmd>FlutterLspRestart<cr>", "[F]lutter [L]SP Restart")
-                            end,
-                            capabilities = function()
-                                local capabilities = vim.lsp.protocol.make_client_capabilities()
-                                local has_blink, blink = pcall(require, "blink.cmp")
-                                if has_blink then
-                                    capabilities = vim.tbl_deep_extend("force", capabilities,
-                                        blink.get_lsp_capabilities())
-                                end
-                                return capabilities
-                            end,
-                        },
-                    })
-                end,
-            },
-        },
+        --                         -- Flutter-specific commands
+        --                         map("n", "<leader>fR", "<cmd>FlutterReload<cr>", "[F]lutter [R]eload")
+        --                         map("n", "<leader>fT", "<cmd>FlutterRestart<cr>", "[F]lutter Res[T]art")
+        --                         map("n", "<leader>fq", "<cmd>FlutterQuit<cr>", "[F]lutter [Q]uit")
+        --                         map("n", "<leader>fd", "<cmd>FlutterDevices<cr>", "[F]lutter [D]evices")
+        --                         map("n", "<leader>fe", "<cmd>FlutterEmulators<cr>", "[F]lutter [E]mulators")
+        --                         map("n", "<leader>fo", "<cmd>FlutterOutlineToggle<cr>", "[F]lutter [O]utline")
+        --                         map("n", "<leader>ft", "<cmd>FlutterDevTools<cr>", "[F]lutter Dev[T]ools")
+        --                         map("n", "<leader>fc", "<cmd>FlutterCopyProfilerUrl<cr>", "[F]lutter [C]opy Profiler URL")
+        --                         map("n", "<leader>fl", "<cmd>FlutterLspRestart<cr>", "[F]lutter [L]SP Restart")
+        --                     end,
+        --                     capabilities = function()
+        --                         local capabilities = vim.lsp.protocol.make_client_capabilities()
+        --                         local has_blink, blink = pcall(require, "blink.cmp")
+        --                         if has_blink then
+        --                             capabilities = vim.tbl_deep_extend("force", capabilities,
+        --                                 blink.get_lsp_capabilities())
+        --                         end
+        --                         return capabilities
+        --                     end,
+        --                 },
+        --             })
+        --         end,
+        --     },
+        -- },
     },
 }
 
@@ -594,6 +594,7 @@ local function setup_server(name, config, capabilities)
 
     -- Remove custom keys
     config.mason = nil
+    config.enable = nil
 
     local success, err = pcall(require("lspconfig")[name].setup, config)
     if not success then
