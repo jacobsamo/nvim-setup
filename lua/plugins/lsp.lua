@@ -1,337 +1,255 @@
--- LazyVim LSP configuration bypassing vtsls completely
-return {
-  -- Configure nvim-lspconfig with reliable TypeScript setup
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        -- Disable all problematic servers
-        tsserver = {
-          enabled = false,
+---@class LspConfig
+---@field mason? boolean
+---@field settings? table
+---@field cmd? string[]
+---@field filetypes? string[]
+---@field capabilities? table
+---@field on_attach? fun(client, bufnr)
+---@field [string]: any
+
+---@type table<string, LspConfig>
+local servers = {
+    ts_ls = {},
+    angularls = {},
+    tailwindcss = {},
+    pyright = {},
+    html = {},
+    cssls = {},
+    jsonls = {},
+    eslint = {},
+
+    csharpier = {
+        enable = false,
+    },
+    omnisharp = {
+        enable = false,
+        enable_roslyn_analysers = true,
+        enable_import_completion = true,
+        organize_imports_on_format = true,
+        enable_decompilation_support = true,
+        filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets' },
+    },
+
+    lua_ls = {
+        enable = true,
+        settings = {
+            Lua = {
+                completion = { callSnippet = 'Replace' },
+            },
         },
-        ts_ls = {
-          enabled = false,
+        on_attach = function(client, bufnr)
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                buffer = bufnr,
+                callback = function()
+                    vim.lsp.buf.format({ async = false })
+                end,
+            })
+        end,
+    },
+
+    dartls = {
+        mason = false,
+        enable = false,
+        cmd = { "dart", "language-server", "--protocol=lsp" },
+    },
+}
+
+-- plugins that help with certain languages
+local typescript_plugins = {
+    {
+        "pmizio/typescript-tools.nvim",
+        dependencies = { "neovim/nvim-lspconfig" },
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {
+            on_attach = function(client, bufnr)
+                local function map(mode, lhs, rhs, desc)
+                    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+                end
+
+                -- TypeScript code actions
+                map("n", "<leader>co", function() vim.cmd("TSToolsOrganizeImports") end, "[C]ode: [O]rganize Imports")
+                map("n", "<leader>ca", function() vim.cmd("TSToolsAddMissingImports") end,
+                    "[C]ode: [A]dd Missing Imports")
+                map("n", "<leader>cu", function() vim.cmd("TSToolsRemoveUnused") end, "[C]ode: Remove [U]nused")
+                map("n", "<leader>cf", function() vim.cmd("TSToolsFixAll") end, "[C]ode: [F]ix All")
+                map("n", "<leader>cR", function() vim.cmd("TSToolsRenameFile") end, "[C]ode: [R]ename File")
+                map("n", "<leader>cS", function() vim.cmd("TSToolsSelectTSVersion") end, "[C]ode: [S]elect TS Version")
+
+                -- Format on save if available
+                if client.supports_method("textDocument/formatting") then
+                    vim.api.nvim_create_autocmd("BufWritePre", {
+                        buffer = bufnr,
+                        callback = function()
+                            vim.lsp.buf.format({ async = false })
+                        end,
+                    })
+                end
+            end,
+            settings = {
+                tsserver_plugins = {
+
+                },
+            },
         },
-        vtsls = {
-          enabled = false, -- Completely disable vtsls since it keeps failing
-        },
-        
-        -- Use typescript-language-server as primary TypeScript server
-        -- This is more reliable and widely supported
-        typescript_language_server = {
-          enabled = true,
-          filetypes = {
+    },
+    {
+        "windwp/nvim-ts-autotag",
+        event = "VeryLazy",
+        ft = {
+            "html",
             "javascript",
-            "javascriptreact",
-            "javascript.jsx",
             "typescript",
+            "javascriptreact",
             "typescriptreact",
-            "typescript.tsx",
-          },
-          settings = {
-            typescript = {
-              updateImportsOnFileMove = { enabled = "always" },
-              suggest = {
-                completeFunctionCalls = true,
-              },
-              inlayHints = {
-                includeInlayParameterNameHints = "literals",
-                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = false,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-                includeInlayEnumMemberValueHints = true,
-              },
-            },
-            javascript = {
-              updateImportsOnFileMove = { enabled = "always" },
-              suggest = {
-                completeFunctionCalls = true,
-              },
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-                includeInlayEnumMemberValueHints = true,
-              },
-            },
-          },
-          -- Add essential TypeScript keybindings that work with typescript-language-server
-          keys = {
-            {
-              "<leader>co",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.organizeImports" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Organize Imports",
-            },
-            {
-              "<leader>cM",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.addMissingImports" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Add missing imports",
-            },
-            {
-              "<leader>cu",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.removeUnused" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Remove unused imports",
-            },
-            {
-              "<leader>cD",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.fixAll" },
-                    diagnostics = {},
-                  },
-                })
-              end,
-              desc = "Fix all diagnostics",
-            },
-          },
+            "angular",
+            "vue",
+            "svelte",
         },
-        
-        -- Angular Language Server
-        angularls = {
-          filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
-        },
-        
-        -- HTML/CSS/JSON servers that work reliably
-        html = {},
-        cssls = {},
-        jsonls = {},
-        eslint = {},
-        
-        -- Dart/Flutter LSP
-        dartls = {
-          cmd = { "dart", "language-server", "--protocol=lsp" },
-          filetypes = { "dart" },
-          init_options = {
-            onlyAnalyzeProjectsWithOpenFiles = true,
-            suggestFromUnimportedLibraries = true,
-            closingLabels = true,
-            outline = true,
-            flutterOutline = true,
-          },
-          settings = {
-            dart = {
-              completeFunctionCalls = true,
-              showTodos = true,
-            },
-          },
-        },
-      },
-      setup = {
-        -- Disable problematic servers
-        tsserver = function()
-          return true -- Disable
+        config = function()
+            require("nvim-ts-autotag").setup({
+                opts = {
+                    enable_close = true,
+                    enable_rename = true,
+                    enable_close_on_slash = false,
+                },
+            })
         end,
-        ts_ls = function()
-          return true -- Disable
-        end,
-        vtsls = function()
-          return true -- Disable completely
-        end,
-        
-        -- Setup typescript-language-server
-        typescript_language_server = function(_, opts)
-          require("lspconfig").tsserver.setup(opts) -- tsserver is the actual config name for typescript-language-server
-          return true
-        end,
-        
-        -- Setup Angular with proper integration
-        angularls = function(_, opts)
-          -- Setup Angular language server
-          require("lspconfig").angularls.setup(opts)
-          
-          LazyVim.lsp.on_attach(function(client)
-            -- Disable angular renaming capability due to duplicate rename popping up
-            client.server_capabilities.renameProvider = false
-          end, "angularls")
-          return true
-        end,
-        
-        dartls = function(_, opts)
-          require("lspconfig").dartls.setup(opts)
-          return true
-        end,
-      },
     },
-  },
+    -- Better commenting with treesitter context
+    {
+        "folke/ts-comments.nvim",
+        event = "VeryLazy",
+        opts = {},
+    },
+}
 
-  -- Mason configuration - only install what actually works
-  {
-    "mason-org/mason.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      
-      -- Only include tools that work reliably
-      local reliable_tools = {
-        -- Language servers that work
-        "typescript-language-server", -- This actually works
-        "angular-language-server",
-        "lua-language-server",
-        "html-lsp",
-        "css-lsp", 
-        "json-lsp",
-        "eslint-lsp",
-        "pyright",
-        
-        -- Formatters that work
-        "stylua",
-        "prettier",
-        "biome",
-        "shellcheck",
-        "shfmt",
-        "flake8",
-        
-        -- Debug adapters that work
-        "js-debug-adapter",
-        "netcoredbg",
-        
-        -- Tools that work
-        "eslint_d",
-        "markdown-toc",
-        "marksman",
-      }
-      
-      -- Add all reliable tools
-      vim.list_extend(opts.ensure_installed, reliable_tools)
-      
-      -- Explicitly exclude problematic packages
-      -- Remove any existing problematic entries
-      for i = #opts.ensure_installed, 1, -1 do
-        local tool = opts.ensure_installed[i]
-        if tool == "vtsls" or tool == "markdownlint-cli2" or tool == "csharpier" then
-          table.remove(opts.ensure_installed, i)
+
+
+local extraLangsPlugins = {
+    typescript_plugins,
+}
+
+
+
+-- Helper: split servers by mason support and filter enabled ones
+local function split_servers(tbl)
+    local mason = {}
+    local manual = {}
+    for name, config in pairs(tbl) do
+        if config.enable ~= false then
+            if config.mason ~= false then
+                table.insert(mason, name)
+            else
+                table.insert(manual, name)
+            end
         end
-      end
-    end,
-  },
+    end
+    return mason, manual
+end
 
-  -- Treesitter configuration for Angular and TypeScript
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "angular", "scss", "typescript", "tsx" })
-      end
-      
-      -- Setup Angular file detection
-      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-        pattern = { "*.component.html", "*.container.html" },
-        callback = function()
-          vim.treesitter.start(nil, "angular")
-        end,
-      })
-    end,
-  },
+-- Helper: get only enabled servers for mason-lspconfig
+local function get_enabled_servers(tbl)
+    local enabled = {}
+    for name, config in pairs(tbl) do
+        if config.enable ~= false then
+            -- shallow copy to avoid mutating original config
+            local conf = vim.tbl_deep_extend("force", {}, config)
 
-  -- Configure conform.nvim for formatting
-  {
-    "stevearc/conform.nvim",
-    opts = function(_, opts)
-      opts.formatters_by_ft = opts.formatters_by_ft or {}
-      
-      -- JavaScript/TypeScript formatting with working tools
-      local js_formatters = { "prettier" } -- Start with prettier only, add biome if working
-      opts.formatters_by_ft.javascript = js_formatters
-      opts.formatters_by_ft.typescript = js_formatters
-      opts.formatters_by_ft.javascriptreact = js_formatters
-      opts.formatters_by_ft.typescriptreact = js_formatters
-      opts.formatters_by_ft.json = js_formatters
-      opts.formatters_by_ft.html = { "prettier" }
-      opts.formatters_by_ft.css = { "prettier" }
-      opts.formatters_by_ft.scss = { "prettier" }
-      opts.formatters_by_ft.htmlangular = { "prettier" }
-      opts.formatters_by_ft.dart = { "dart_format" }
-      opts.formatters_by_ft.lua = { "stylua" }
-      opts.formatters_by_ft.sh = { "shfmt" }
-      opts.formatters_by_ft.bash = { "shfmt" }
-      
-      opts.formatters = opts.formatters or {}
-      opts.formatters.dart_format = {
-        command = "dart",
-        args = { "format", "--stdin-name", "$FILENAME" },
-        stdin = true,
-      }
-      
-      return opts
-    end,
-  },
+            -- remove the enable key
+            conf.enable = nil
 
-  -- Configure nvim-lint for linting
-  {
-    "mfussenegger/nvim-lint",
-    opts = {
-      linters_by_ft = {
-        javascript = { "eslint_d" },
-        typescript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-        python = { "flake8" },
-        sh = { "shellcheck" },
-        bash = { "shellcheck" },
-      },
-    },
-  },
-
-  -- Mini icons configuration
-  {
-    "echasnovski/mini.icons",
-    opts = {
-      file = {
-        [".eslintrc.js"] = { glyph = "󰱺", hl = "MiniIconsYellow" },
-        [".node-version"] = { glyph = "", hl = "MiniIconsGreen" },
-        [".prettierrc"] = { glyph = "", hl = "MiniIconsPurple" },
-        [".yarnrc.yml"] = { glyph = "", hl = "MiniIconsBlue" },
-        ["eslint.config.js"] = { glyph = "󰱺", hl = "MiniIconsYellow" },
-        ["package.json"] = { glyph = "", hl = "MiniIconsGreen" },
-        ["tsconfig.json"] = { glyph = "", hl = "MiniIconsAzure" },
-        ["tsconfig.build.json"] = { glyph = "", hl = "MiniIconsAzure" },
-        ["yarn.lock"] = { glyph = "", hl = "MiniIconsBlue" },
-      },
-    },
-  },
-
-  -- Add TypeScript support through extras but override the vtsls part
-  {
-    "LazyVim/LazyVim",
-    opts = function(_, opts)
-      -- Make sure we're not importing the typescript extra that forces vtsls
-      opts.extras = opts.extras or {}
-      -- Remove any typescript extra that might force vtsls
-      for i = #opts.extras, 1, -1 do
-        if opts.extras[i]:match("typescript") then
-          table.remove(opts.extras, i)
+            enabled[name] = conf
         end
-      end
-    end,
-  },
+    end
+    return enabled
+end
+
+
+local function default_on_attach(client, bufnr)
+    -- Format on save for LSPs that support it
+    if client.supports_method("textDocument/formatting") then
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = function()
+                vim.lsp.buf.format({ async = false })
+            end,
+        })
+    end
+end
+
+
+return {
+    {
+        'neovim/nvim-lspconfig',
+        dependencies = { 'saghen/blink.cmp',
+            { "mason-org/mason.nvim" },
+            "mason-org/mason-lspconfig.nvim",
+            "WhoIsSethDaniel/mason-tool-installer.nvim",
+            { "j-hui/fidget.nvim" },
+            -- LSP UI/Health
+            { "folke/trouble.nvim" },
+
+            -- Completion Capabilities
+            "saghen/blink.cmp",
+        },
+        config = function()
+            local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+            -- setup local items
+            require("fidget").setup({})
+            require("mason").setup()
+
+            local enabled_servers = get_enabled_servers(servers)
+            local mason_lsps, manual_lsps = split_servers(enabled_servers)
+
+
+            -- Install Mason-based servers
+            require("mason-tool-installer").setup {
+                ensure_installed = mason_lsps,
+            }
+
+            -- Mason LSP setups via mason-lspconfig
+            require("mason-lspconfig").setup {
+                handlers = {
+                    function(server_name)
+                        local config = enabled_servers[server_name] or {}
+                        config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+                        config.on_attach = config.on_attach or default_on_attach
+                        require("lspconfig")[server_name].setup(config)
+                    end,
+                },
+            }
+
+            -- Manual LSP setups (non-Mason)
+            for _, name in ipairs(manual_lsps) do
+                local config = enabled_servers[name] or {}
+                config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+                config.on_attach = config.on_attach or default_on_attach
+                require("lspconfig")[name].setup(config)
+            end
+
+            -- Diagnostics config
+            vim.diagnostic.config {
+                severity_sort = true,
+                float = { border = "rounded", source = "if_many" },
+                underline = { severity = vim.diagnostic.severity.ERROR },
+                signs = vim.g.have_nerd_font and {
+                    text = {
+                        [vim.diagnostic.severity.ERROR] = "󰅚 ",
+                        [vim.diagnostic.severity.WARN]  = "󰀪 ",
+                        [vim.diagnostic.severity.INFO]  = "󰋽 ",
+                        [vim.diagnostic.severity.HINT]  = "󰌶 ",
+                    },
+                } or {},
+                virtual_text = {
+                    source = "if_many",
+                    spacing = 2,
+                    format = function(diagnostic)
+                        return diagnostic.message
+                    end,
+                },
+            }
+        end
+    },
+    extraLangsPlugins
 }
