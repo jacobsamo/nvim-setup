@@ -1,8 +1,5 @@
 return {
-    {
-        "nvim-lua/plenary.nvim",
-        name = "plenary"
-    },
+    "nvim-lua/plenary.nvim",
     { "nvim-tree/nvim-web-devicons", opts = {} },
     {
         "folke/which-key.nvim",
@@ -40,7 +37,6 @@ return {
     -- a module to help you be good at Vim
     {
         "theprimeagen/vim-be-good",
-
         dependencies = {
             "nvim-lua/plenary.nvim"
         },

@@ -6,7 +6,6 @@ return {
         null_ls.setup({
             sources = {
                 -- Do not add formatters here this is handled by conform.nvim
-                null_ls.builtins.diagnostics.flake8,
                 null_ls.builtins.completion.spell,
                 -- Add back in eslint if you choose to not use the lsp version
                 -- null_ls.builtins.diagnostics.eslint_d,

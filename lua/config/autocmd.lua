@@ -93,13 +93,13 @@ autocmd('LspAttach', {
             end, "[F]ormat Selection")
 
             -- Optional: Auto-format on save (uncomment if desired)
-            -- vim.api.nvim_create_autocmd("BufWritePre", {
-            --     buffer = bufnr,
-            --     group = JacobSamoGroup,
-            --     callback = function()
-            --         vim.lsp.buf.format({ async = false, timeout_ms = 3000 })
-            --     end,
-            -- })
+            autocmd("BufWritePre", {
+                buffer = bufnr,
+                group = JacobSamoGroup,
+                callback = function()
+                    vim.lsp.buf.format({ async = false, timeout_ms = 3000 })
+                end,
+            })
         end
 
         -- Inlay hints toggle (for supported servers)
@@ -122,19 +122,19 @@ autocmd('LspAttach', {
         if client and client.supports_method("textDocument/documentHighlight") then
             local highlight_augroup = vim.api.nvim_create_augroup("lsp-highlight", { clear = false })
 
-            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+            autocmd({ "CursorHold", "CursorHoldI" }, {
                 buffer = bufnr,
                 group = highlight_augroup,
                 callback = vim.lsp.buf.document_highlight,
             })
 
-            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+            autocmd({ "CursorMoved", "CursorMovedI" }, {
                 buffer = bufnr,
                 group = highlight_augroup,
                 callback = vim.lsp.buf.clear_references,
             })
 
-            vim.api.nvim_create_autocmd("LspDetach", {
+            autocmd("LspDetach", {
                 group = highlight_augroup,
                 callback = function(event)
                     vim.lsp.buf.clear_references()
@@ -148,7 +148,7 @@ autocmd('LspAttach', {
             map("n", "<leader>cl", vim.lsp.codelens.run, "[C]ode [L]ens")
 
             -- Refresh codelens on certain events
-            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+            autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
                 buffer = bufnr,
                 group = JacobSamoGroup,
                 callback = vim.lsp.codelens.refresh,
