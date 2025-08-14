@@ -1,22 +1,18 @@
-# My 💤 LazyVim Neovim Configuration
-
-This is my personal Neovim configuration, using the starter template for [LazyVim](https://github.com/LazyVim/LazyVim), Refer to the [documentation](https://lazyvim.github.io/installation) to get started and configure to your liking.
+# My Neovim Configuration
 
 I have configured the setup to work with the following lanauges:
 
 - JavaScript/TypeScript
+- Angular
 - HTML/CSS
 - Python
 - C#
 - Lua
 - Dart / Flutter
 
-To get them working please follow the instructions below.
-
 ## To get started
 
 1. Make sure you have the following installed:
-
    - [Neovim](https://github.com/neovim/neovim/releases)
    - [Git](https://git-scm.com/downloads)
    - [NodeJS](https://nodejs.org/en/download/)
@@ -25,7 +21,12 @@ To get them working please follow the instructions below.
 2. Clone this repository
 
 ```bash
-git clone https://github.com/jacobsamo/nvim-setup
+# If you are using windows
+git clone https://github.com/jacobsamo/nvim-setup $env:LOCALAPPDATA\nvim
+
+# if you are using unix
+
+git clone https://github.com/jacobsamo/nvim-setup ~/.config/nvim
 ```
 
 ### 3. Setting up the language servers
@@ -35,20 +36,12 @@ The following language servers will need to be installed globally:
 - [vscode-langservers-extracted](https://github.com/vscode-langservers/vscode-langservers-extracted) for css, html, json and eslint language servers
 - [typescipt](https://github.com/typescript-language-server/typescript-language-server)
 - [tailwindcss](https://github.com/tailwindlabs/tailwindcss-intellisense)
-- [angular]() for those using angular (optional)
+- [angular](https://angular.dev/tools/language-service) for those using angular (optional)
 
 required:
 
 ```bash
-npm install -g vscode-langservers-extracted
-npm install -g typescript-language-server
-npm install -g @tailwindcss/language-server
-```
-
-optional (if your not using any of this make sure to uncomment them in the `lspconfig.lua` file):
-
-```bash
-npm install -g @angular/language-server
+npm install -g vscode-langservers-extracted typescript-language-server @tailwindcss/language-server @angular/language-server
 ```
 
 **C# setup**
@@ -63,7 +56,7 @@ dotnet tool install --global csharp-ls
 **LazyGit**
 following the install guide from https://github.com/jesseduffield/lazygit?tab=readme-ov-file#installation
 
-- windows: `choco install lazygit`
+- windows: `winget install --id=JesseDuffield.lazygit`
 - mac: `brew install lazygit`
 - linux: `sudo apt install lazygit`
 
