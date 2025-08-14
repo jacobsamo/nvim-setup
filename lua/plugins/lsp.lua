@@ -6,14 +6,12 @@
 ---@field server_config? table
 ---@field on_attach? fun(client, bufnr: integer)
 ---@field filetypes? string[]
----@field root_pattern? string[]
 ---@field plugins? LazyPluginSpec[]
 
 ---@type table<string, ServerConfig>
 local servers = {
 	typescript_javascript = {
 		server_name = "ts_ls",
-		root_pattern = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
 		plugins = {
 			{
 				"pmizio/typescript-tools.nvim",
@@ -39,51 +37,49 @@ local servers = {
 
 	tailwind = {
 		server_name = "tailwindcss",
-		root_pattern = {
-			"tailwind.config.js",
-			"tailwind.config.cjs",
-			"tailwind.config.ts",
-			"postcss.config.js",
-			".git",
-		},
 	},
 
 	angular = {
 		server_name = "angularls",
-		filetypes = { "html", "typescript" },
-		root_pattern = { "angular.json", "package.json", ".git" },
+		filetypes = { 'typescript', 'html', 'htmlangular' },
 	},
 
 	dart = {
 		server_name = "dartls",
 		mason = false,
-		root_pattern = { "pubspec.yaml", ".git" },
 	},
 
 	lua = {
 		server_name = "lua_ls",
-		root_pattern = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", ".git" },
-	},
-
-	json = {
-		server_name = "jsonls",
-		root_pattern = { "package.json", ".git" },
 	},
 
 	csharp = {
 		server_name = "omnisharp",
-		root_pattern = { "*.sln", "*.csproj", ".git" },
 	},
 
 	python = {
 		server_name = "pyright",
-		root_pattern = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
 	},
 
 	go = {
 		server_name = "gopls",
-		root_pattern = { "go.mod", ".git" },
 	},
+
+  	json = {
+		server_name = "jsonls",
+	},
+
+  yaml = {
+    server_name = "yamlls"
+  },
+
+  html = {
+    server_name = "html"
+  },
+
+  css = {
+    server_name = "cssls"
+  },
 }
 
 local function getPlugins()
@@ -153,10 +149,6 @@ return {
 					end
 				end
 
-				-- Always resolve root_dir from each server's pattern
-				local root_dir = cfg.root_pattern and util.root_pattern(unpack(cfg.root_pattern))
-					or util.root_pattern(".git")
-
 				local opts = {
 					capabilities = capabilities,
 					on_attach = function(client, bufnr)
@@ -166,7 +158,6 @@ return {
 						end
 					end,
 					filetypes = cfg.filetypes,
-					root_dir = root_dir,
 				}
 
 				if cfg.server_config then
