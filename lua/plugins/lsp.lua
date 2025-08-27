@@ -41,7 +41,37 @@ local servers = {
 
 	angular = {
 		server_name = "angularls",
-		filetypes = { 'typescript', 'html', 'htmlangular' },
+		filetypes = { 'typescript', 'html', 'htmlangular', 'typescriptreact' },
+		server_config = {
+			root_dir = function(fname)
+				local util = require("lspconfig.util")
+				return util.root_pattern("angular.json", "project.json", "nx.json")(fname)
+					or util.root_pattern("package.json")(fname)
+			end,
+			on_new_config = function(new_config, new_root_dir)
+				local util = require("lspconfig.util")
+				new_config.cmd = {
+					"ngserver",
+					"--stdio",
+					"--tsProbeLocations",
+					new_root_dir,
+					"--ngProbeLocations",
+					new_root_dir,
+				}
+			end,
+			settings = {
+				angular = {
+					enable = true,
+					log = "verbose",
+					forceStrictTemplates = false,
+				}
+			},
+			init_options = {
+				angular = {
+					enable = true,
+				}
+			}
+		}
 	},
 
 	dart = {
@@ -51,6 +81,15 @@ local servers = {
 
 	lua = {
 		server_name = "lua_ls",
+		server_config = {
+			settings = {
+				Lua = {
+					completion = {
+						callSnippet = "Replace"
+					}
+				}
+			}
+		}
 	},
 
 	csharp = {
@@ -65,21 +104,40 @@ local servers = {
 		server_name = "gopls",
 	},
 
-  	json = {
+	json = {
 		server_name = "jsonls",
+		-- server_config = {
+		-- 	settings = {
+		-- 		json = {
+		-- 			schemas = require('schemastore').json.schemas(),
+		-- 			validate = { enable = true },
+		-- 		}
+		-- 	}
+		-- }
 	},
 
-  yaml = {
-    server_name = "yamlls"
-  },
+	yaml = {
+		server_name = "yamlls",
+		-- server_config = {
+		-- 	settings = {
+		-- 		yaml = {
+		-- 			schemaStore = {
+		-- 				enable = false,
+		-- 				url = "",
+		-- 			},
+		-- 			schemas = require('schemastore').yaml.schemas(),
+		-- 		}
+		-- 	}
+		-- }
+	},
 
-  html = {
-    server_name = "html"
-  },
+	html = {
+		server_name = "html"
+	},
 
-  css = {
-    server_name = "cssls"
-  },
+	css = {
+		server_name = "cssls"
+	},
 }
 
 local function getPlugins()
@@ -95,7 +153,8 @@ local function getPlugins()
 end
 
 return {
-	getPlugins(),
+	-- First, return all the plugins from servers
+	unpack(getPlugins()),
 
 	{
 		"neovim/nvim-lspconfig",
@@ -107,16 +166,17 @@ return {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			"j-hui/fidget.nvim",
 			"b0o/schemastore.nvim",
-			getPlugins(),
 		},
 		config = function()
 			local lspconfig = require("lspconfig")
 			local mason = require("mason")
 			local mason_lspconfig = require("mason-lspconfig")
-			local util = require("lspconfig.util")
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
+
+			-- Setup fidget first
 			require("fidget").setup()
 
+			-- Setup mason
 			mason.setup()
 
 			-- Collect all servers that should be installed by mason
@@ -127,8 +187,10 @@ return {
 				end
 			end
 
+			-- Setup mason-lspconfig with proper handlers
 			mason_lspconfig.setup({
 				ensure_installed = mason_servers,
+				automatic_installation = true,
 			})
 
 			local function global_on_attach(client, bufnr)
@@ -142,13 +204,8 @@ return {
 				end
 			end
 
+			-- Setup each server
 			for _, cfg in pairs(servers) do
-				if cfg.plugins then
-					for _, plugin in ipairs(cfg.plugins) do
-						require("lazy").setup({ plugin })
-					end
-				end
-
 				local opts = {
 					capabilities = capabilities,
 					on_attach = function(client, bufnr)
@@ -157,14 +214,31 @@ return {
 							cfg.on_attach(client, bufnr)
 						end
 					end,
-					filetypes = cfg.filetypes,
 				}
 
+				-- Add filetypes if specified
+				if cfg.filetypes then
+					opts.filetypes = cfg.filetypes
+				end
+
+				-- Merge server_config if provided
 				if cfg.server_config then
 					opts = vim.tbl_deep_extend("force", opts, cfg.server_config)
 				end
 
+				-- Setup the server
 				lspconfig[cfg.server_name].setup(opts)
+
+				vim.diagnostic.config({
+					signs = {
+						text = {
+							[vim.diagnostic.severity.ERROR] = " ",
+							[vim.diagnostic.severity.WARN] = " ",
+							[vim.diagnostic.severity.HINT] = "󰠠 ",
+							[vim.diagnostic.severity.INFO] = " ",
+						},
+					},
+				})
 			end
 		end,
 	},

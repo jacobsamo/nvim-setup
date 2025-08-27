@@ -3,6 +3,9 @@ return
 {
     "folke/snacks.nvim",
     -- stylua: ignore
+    priority = 1000,
+    lazy = false,
+    ---@type snacks.Keys
     keys = {
         {
             "<leader>sf",
@@ -22,15 +25,21 @@ return
         { "<leader>S",   function() Snacks.scratch.select() end,   desc = "Select Scratch Buffer" },
         { "<leader>dps", function() Snacks.profiler.scratch() end, desc = "Profiler Scratch Buffer" },
     },
+    ---@type snacks.Config
     opts = {
+        bigfile = { enabled = true },
+        explorer = { enabled = true },
         indent = { enabled = true },
         input = { enabled = true },
+        picker = { enabled = true },
         notifier = { enabled = true },
+        quickfile = { enabled = true },
         scope = { enabled = true },
         scroll = { enabled = true },
+        statuscolumn = { enabled = true },
         words = { enabled = true },
-        animate  = { enabled = true },
         dashboard = {
+            enabled = true,
             preset = {
                 -- stylua: ignore
                 ---@type snacks.dashboard.Item[]

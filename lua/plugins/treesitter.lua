@@ -30,6 +30,7 @@ return {
             "vimdoc",
             "yaml",
             "c_sharp",
+            "regex"
         },
         indent = {
             enable = true,

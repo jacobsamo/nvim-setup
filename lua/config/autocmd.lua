@@ -16,11 +16,11 @@ autocmd("LspAttach", {
 		end
 
 		-- Goto
-		map("n", "gd", vim.lsp.buf.definition, "Goto Definition")
-		map("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
-		map("n", "gi", vim.lsp.buf.implementation, "Goto Implementation")
-		map("n", "gr", vim.lsp.buf.references, "Goto References")
-		map("n", "gt", vim.lsp.buf.type_definition, "Goto Type Definition")
+		-- map("n", "gd", vim.lsp.buf.definition, "Goto Definition")
+		-- map("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
+		-- map("n", "gr", vim.lsp.buf.references, "Goto References")
+		-- map("n", "gi", vim.lsp.buf.implementation, "Goto Implementation")
+		-- map("n", "gt", vim.lsp.buf.type_definition, "Goto Type Definition")
 
 		-- Hover & Signature
 		map("n", "K", vim.lsp.buf.hover, "Hover Documentation")
