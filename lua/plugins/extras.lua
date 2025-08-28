@@ -1,8 +1,9 @@
 return {
 
-  -- formatters
+  -- plugins
   { import = "lazyvim.plugins.extras.formatting.prettier" },
   { import = "lazyvim.plugins.extras.editor.harpoon2" },
+  { import = "lazyvim.plugins.coding.luasnip" },
 
   -- add jsonls and schemastore packages, and setup treesitter for json, json5 and jsonc
   { import = "lazyvim.plugins.extras.lang.json" },
