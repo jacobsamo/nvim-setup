@@ -5,18 +5,6 @@
 -- * disable/enabled LazyVim plugins
 -- * override the configuration of LazyVim plugins
 return {
-  -- formatters
-  { import = "lazyvim.plugins.extras.formatting.prettier" },
-  { import = "lazyvim.plugins.extras.editor.harpoon2" },
-  { import = "lazyvim.plugins.extras.editor.neo-tree" },
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    keys = {
-      { "\\", "<cmd>Neotree focus<CR>", desc = "Focus NeoTree", silent = true },
-      { "\\\\", "<cmd>Neotree close<CR>", desc = "Close NeoTree", silent = true },
-    },
-  },
-
   {
     "folke/snacks.nvim",
     keys = {
@@ -33,6 +21,18 @@ return {
           Snacks.picker.grep()
         end,
         desc = "[S]earch [G]rep",
+      },
+      {
+        "\\",
+        function()
+          local snacks = Snacks.picker.get({ source = "explorer" })[1]
+          if snacks then
+            Snacks.picker.actions.focus_list(snacks)
+          else
+            Snacks.explorer({ focus = "list" })
+          end
+        end,
+        desc = "Focus Explorer",
       },
     },
   },
