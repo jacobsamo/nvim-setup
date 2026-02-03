@@ -1,83 +1,132 @@
--- every spec file under the "plugins" directory will be loaded automatically by lazy.nvim
---
--- In your plugin files, you can:
--- * add extra plugins
--- * disable/enabled LazyVim plugins
--- * override the configuration of LazyVim plugins
 return {
-  {
-    "mbbill/undotree",
-    cmd = "UndotreeToggle",
-    keys = {
-      { "<leader>u", "<cmd>UndotreeToggle<CR>", desc = "Toggle Undo Tree" },
-    },
-    config = function()
-      vim.g.undotree_WindowLayout = 2
-      vim.g.undotree_ShortIndicators = 1
-      vim.g.undotree_SplitWidth = 35
-      vim.g.undotree_DiffpanelHeight = 15
-      vim.g.undotree_SetFocusWhenToggle = 1
-    end,
-  },
-  {
-    "ThePrimeagen/vim-be-good",
-    event = "VeryLazy",
-    config = function()
-      require("vim-be-good").setup()
-    end,
-  },
-  {
-    "folke/snacks.nvim",
-    keys = {
-      {
-        "<leader>sf",
-        function()
-          Snacks.picker.smart()
-        end,
-        desc = "[S]earch [F]ile",
-      },
-      {
-        "<leader>sg",
-        function()
-          Snacks.picker.grep()
-        end,
-        desc = "[S]earch [G]rep",
-      },
-      {
-        "\\",
-        function()
-          local snacks = Snacks.picker.get({ source = "explorer" })[1]
-          if snacks then
-            Snacks.picker.actions.focus_list(snacks)
-          else
-            Snacks.explorer({ focus = "list" })
-          end
-        end,
-        desc = "Focus Explorer",
-      },
-    },
-  },
+	-- the colorscheme should be available when starting Neovim
+	{
+		"laytan/cloak.nvim",
+		opts = {
+			enabled = true,
+			cloak_character = "*",
+			highlight_group = "Comment",
+			patterns = {
+				{
+					file_pattern = { ".env*", "wrangler.toml", ".dev.vars" },
+					cloak_pattern = "=.+",
+				},
+			},
+		},
+	},
+	{
+		"gelguy/wilder.nvim",
+		config = function()
+			local wilder = require("wilder")
+			wilder.setup({ modes = { ":", "/", "?" } })
+			wilder.set_option(
+				"renderer",
+				wilder.popupmenu_renderer(wilder.popupmenu_border_theme({
+					highlights = {
+						border = "Normal",
+						default = wilder.make_hl(
+							"WilderDefault",
+							"Pmenu",
+							{ { a = 1 }, { a = 1 }, { background = "#1a1a24" } }
+						),
+					},
+					pumblend = 10,
+					border = "single",
+				}))
+			)
+		end,
+	},
+	-- I have a separate config.mappings file where I require which-key.
+	-- With lazy the plugin will be automatically loaded when it is required somewhere
+	{ "folke/which-key.nvim", lazy = true },
 
-  -- add more treesitter parsers
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = {
-        "bash",
-        "html",
-        "javascript",
-        "json",
-        "lua",
-        "markdown",
-        "markdown_inline",
-        "python",
-        "query",
-        "regex",
-        "tsx",
-        "typescript",
-        "vim",
-        "yaml",
-      },
-    },
-  },
+	{
+		"nvim-neorg/neorg",
+		-- lazy-load on filetype
+		ft = "norg",
+		-- options for neorg. This will automatically call `require("neorg").setup(opts)`
+		opts = {
+			load = {
+				["core.defaults"] = {},
+			},
+		},
+	},
+
+	{
+		"dstein64/vim-startuptime",
+		-- lazy-load on a command
+		cmd = "StartupTime",
+		-- init is called during startup. Configuration for vim plugins typically should be set in an init function
+		init = function()
+			vim.g.startuptime_tries = 10
+		end,
+	},
+
+	{
+		"hrsh7th/nvim-cmp",
+		-- load cmp on InsertEnter
+		event = "InsertEnter",
+		-- these dependencies will only be loaded when cmp loads
+		-- dependencies are always lazy-loaded unless specified otherwise
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-buffer",
+		},
+		config = function()
+			local cmp = require("cmp")
+			cmp.setup({
+				window = {
+					completion = cmp.config.window.bordered(),
+					documentation = cmp.config.window.bordered(),
+				},
+				mapping = cmp.mapping.preset.insert({
+					["<C-b>"] = cmp.mapping.scroll_docs(-4),
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-e>"] = cmp.mapping.abort(),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+				}),
+				sources = cmp.config.sources({
+					{ name = "nvim_lsp" },
+					{ name = "buffer" },
+				}),
+			})
+		end,
+	},
+
+	-- if some code requires a module from an unloaded plugin, it will be automatically loaded.
+	-- So for api plugins like devicons, we can always set lazy=true
+	{ "nvim-tree/nvim-web-devicons", lazy = true },
+
+	-- you can use the VeryLazy event for things that can
+	-- load later and are not important for the initial UI
+	{ "stevearc/dressing.nvim", event = "VeryLazy" },
+
+	{
+		"Wansmer/treesj",
+		keys = {
+			{ "J", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
+		},
+		opts = { use_default_keymaps = false, max_join_length = 150 },
+	},
+
+	{
+		"monaqa/dial.nvim",
+		-- lazy-load on keys
+		-- mode is `n` by default. For more advanced options, check the section on key mappings
+		keys = { "<C-a>", { "<C-x>", mode = "n" } },
+	},
+
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		main = "ibl",
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		opts = {
+			scope = {
+				enabled = true,
+				show_start = false,
+				show_end = false,
+			},
+		},
+	},
 }
